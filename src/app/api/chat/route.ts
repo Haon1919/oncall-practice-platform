@@ -1,15 +1,17 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-
 export async function POST(req: Request) {
   try {
-    const { message, history, incidentContext } = await req.json();
+    const { message, history, incidentContext, apiKey, model } = await req.json();
 
-    if (!process.env.GEMINI_API_KEY) {
-      return NextResponse.json({ error: "GEMINI_API_KEY is not set" }, { status: 500 });
+    const keyToUse = apiKey || process.env.GEMINI_API_KEY;
+    if (!keyToUse) {
+      return NextResponse.json({ error: "GEMINI_API_KEY is not set and no API key was provided" }, { status: 500 });
     }
+
+    const ai = new GoogleGenAI({ apiKey: keyToUse });
+    const modelToUse = model || 'gemini-2.5-flash';
 
     const systemPrompt = `
       You are a senior software engineer mentoring a junior engineer who is currently on-call.
@@ -32,7 +34,7 @@ export async function POST(req: Request) {
     }));
 
     const chat = ai.chats.create({
-      model: 'gemini-2.5-flash',
+      model: modelToUse,
       config: {
         systemInstruction: systemPrompt,
       }
@@ -51,7 +53,7 @@ export async function POST(req: Request) {
     fullPrompt += `\nJunior: ${message}\nSenior:`;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: modelToUse,
       contents: fullPrompt,
     });
 

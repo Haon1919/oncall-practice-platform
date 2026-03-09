@@ -5,16 +5,19 @@ import fs from 'fs/promises';
 import path from 'path';
 import os from 'os';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 const docker = new Docker({ socketPath: '/var/run/docker.sock' });
 
 export async function POST(req: Request) {
   try {
-    const { appName, description, cloudProvider, incidentId } = await req.json();
+    const { appName, description, cloudProvider, incidentId, apiKey, model } = await req.json();
 
-    if (!process.env.GEMINI_API_KEY) {
-      return NextResponse.json({ error: "GEMINI_API_KEY is not set" }, { status: 500 });
+    const keyToUse = apiKey || process.env.GEMINI_API_KEY;
+    if (!keyToUse) {
+      return NextResponse.json({ error: "GEMINI_API_KEY is not set and no API key was provided" }, { status: 500 });
     }
+
+    const ai = new GoogleGenAI({ apiKey: keyToUse });
+    const modelToUse = model || 'gemini-2.5-flash';
 
     // 1. Generate the buggy application code
     const codePrompt = `
@@ -38,7 +41,7 @@ export async function POST(req: Request) {
     `;
 
     const codeResponse = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: modelToUse,
       contents: codePrompt,
       config: {
         responseMimeType: "application/json",
@@ -64,7 +67,7 @@ export async function POST(req: Request) {
     `;
 
     const ticketResponse = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: modelToUse,
       contents: ticketPrompt,
     });
 

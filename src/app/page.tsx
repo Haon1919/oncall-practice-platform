@@ -5,7 +5,7 @@ import { useStore } from "@/store/useStore";
 import { Play, Loader2, CheckCircle2, XCircle, Server, Cloud } from "lucide-react";
 
 export default function Dashboard() {
-  const { incident, setIncident, updateIncidentStatus, addTicket } = useStore();
+  const { incident, setIncident, updateIncidentStatus, addTicket, apiKey, model } = useStore();
   const [appName, setAppName] = useState("");
   const [description, setDescription] = useState("");
   const [cloudProvider, setCloudProvider] = useState("aws");
@@ -32,7 +32,7 @@ export default function Dashboard() {
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ appName, description, cloudProvider, incidentId: newIncidentId }),
+        body: JSON.stringify({ appName, description, cloudProvider, incidentId: newIncidentId, apiKey, model }),
       });
 
       if (!response.ok) {

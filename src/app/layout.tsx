@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
-import { LayoutDashboard, Mail, Terminal, MessageSquare, AlertCircle } from "lucide-react";
+import { LayoutDashboard, Mail, Terminal, MessageSquare, AlertCircle, Settings } from "lucide-react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -41,6 +41,10 @@ export default function RootLayout({
             <Link href="/chat" className="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
               <MessageSquare size={20} />
               <span className="font-medium">AI Assistant</span>
+            </Link>
+            <Link href="/settings" className="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
+              <Settings size={20} />
+              <span className="font-medium">Settings</span>
             </Link>
           </nav>
           <div className="p-4 border-t border-gray-200 text-xs text-gray-500 text-center">

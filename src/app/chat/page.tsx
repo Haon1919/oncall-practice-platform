@@ -5,7 +5,7 @@ import { useStore } from "@/store/useStore";
 import { Send, Bot, User, Loader2, AlertCircle } from "lucide-react";
 
 export default function Chat() {
-  const { incident, chatHistory, addChatMessage } = useStore();
+  const { incident, chatHistory, addChatMessage, apiKey, model } = useStore();
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -35,6 +35,8 @@ export default function Chat() {
           message: userMessage,
           history: chatHistory,
           incidentContext: incident,
+          apiKey,
+          model,
         }),
       });
 
